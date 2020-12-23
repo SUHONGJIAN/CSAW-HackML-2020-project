@@ -20,6 +20,6 @@ Methods: STRIP + Fine-pruning
 3. Follow the instructions from your terminal
 
 ## **Attention!!!**
-***In the STRIP process,  the running time may be very long. (e.g. for 10k data, may need 15min.)***  
+***In the STRIP process,  the running time may be very long. (e.g. for 10KB data, may need 15min.)***  
 ***If you notice the following warnings from your terminal, please ignore them.***  
 ![](resources/warning.png)
