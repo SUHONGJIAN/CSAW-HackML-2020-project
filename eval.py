@@ -10,6 +10,8 @@ DataLoader class is inspired by https://github.com/csaw-hackml/CSAW-HackML-2020/
 class DataLoader:
   def __init__(self, file_path):
     self.file_path = file_path
+    self.load()
+    self.preprocess()
 
   def load(self):
     data = h5py.File(self.file_path, "r")
@@ -22,45 +24,48 @@ class DataLoader:
 
 def num_to_net(num):
     numbers = {
-        1: {"model": "models/sunglasses_bd_net.h5", "entropy": "entropy/entropy_clean_sunglasses.h5", "fine_pruned_model": ""},
-        2: {"model": "models/anonymous_1_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous1", "fine_pruned_model": ""},
-        3: {"model": "models/anonymous_2_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous2", "fine_pruned_model": ""},
-        4: {"model": "models/multi_trigger_multi_target_bd_net.h5", "entropy": "entropy/entropy_clean_multi", "fine_pruned_model": ""},
+        "1": {"model": "models/sunglasses_bd_net.h5", "entropy": "entropy/entropy_clean_sunglasses.h5", "fine_pruned_model": ""},
+        "2": {"model": "models/anonymous_1_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous1.h5", "fine_pruned_model": ""},
+        "3": {"model": "models/anonymous_2_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous2.h5", "fine_pruned_model": ""},
+        "4": {"model": "models/multi_trigger_multi_target_bd_net.h5", "entropy": "entropy/entropy_clean_multi.h5", "fine_pruned_model": ""},
     }
-    return numbers.get(num, {"model": "models/sunglasses_bd_net", "entropy": "entropy/entropy_clean_sunglasses.h5"})
+    return numbers.get(num, {"model": "models/sunglasses_bd_net.h5", "entropy": "entropy/entropy_clean_sunglasses.h5"})
 
 
 def main():
     # Choose a test BadNet
-    print("Select the net: \n1. sunglasses_bd_net \n2. anonymous_1_bd_net \n3. anonymous_2_bd_net \n4. multi-trigger_multi_target_bd_net")
+    print('\033[0;32m' + "Select a test net: \n1. sunglasses_bd_net \n2. anonymous_1_bd_net \n3. anonymous_2_bd_net \n4. multi-trigger_multi_target_bd_net")
     net = num_to_net(input())
     model = net["model"]
+    print("{0} selected!".format(model))
     bd_model = keras.models.load_model(model)
 
     # Set the test poisoned data
-    print("Please put the poisoned data under eval/ and name the file test.h5 (i.e. eval/poisoned.h5) \nThen click enter.")
+    print("Please put the corresponding poisoned data under eval/ and name the file poisoned.h5 (i.e. eval/poisoned.h5) \nThen click enter.")
+    input()
     clean_data_test_filename = "data/clean_test_data.h5"
     poisoned_data_test_filename = "eval/poisoned.h5"
     while not os.path.isfile(poisoned_data_test_filename):
-        print("Error: eval/poisoned.h5 does not exist. please try again.")
+        print('\033[91m' + "Error: eval/poisoned.h5 does not exist. please try again.\nThen click enter.")
+        input()
     test_clean = DataLoader(clean_data_test_filename)
     test_poisoned = DataLoader(poisoned_data_test_filename)
 
     # Step one: STRIP
-    print("STRIP: running......")
+    print('\033[0;32m' + "STRIP: running......(maybe several minutes)")
     entropy_filename = net["entropy"]
     entropy_clean_data = h5py.File(entropy_filename, "r")
     entropy_clean = np.asarray(entropy_clean_data["data"])
     STRIP_filter = STRIP(50, 1.5, 1, 0)
     pred_poisoned = STRIP_filter.predict(entropy_clean, test_poisoned.x, bd_model)
     succ_att_rate = np.mean(np.equal(pred_poisoned, test_poisoned.y)) * 100
-    print("Success attack rate after STRIP: {0}%".format(succ_att_rate))
+    print('\033[95m' + "Success attack rate after STRIP: {0}%".format(succ_att_rate))
     pred_clean = STRIP_filter.predict(entropy_clean, test_clean.x, bd_model)
     accu = np.mean(np.equal(pred_clean, test_clean.y)) * 100
     print("Accuracy after STRIP: {0}%".format(accu))
 
     # Step two: Fine-pruning
-    print("Fine-pruning: running......")
+    print('\033[0;32m' + "Fine-pruning: running......")
     I_poisoned_remaining = np.argwhere(pred_poisoned == test_poisoned.y)
     test_poisoned_remaining = test_poisoned.x[I_poisoned_remaining]
     I_clean_remaining = np.argwhere(pred_clean != test_clean.y)
@@ -68,7 +73,7 @@ def main():
     fine_pruned_model = keras.models.load_model(net["fine_pruned_model"])
     pred_poisoned_remaining = fine_pruned_model.predict(test_poisoned_remaining)
     succ_att_rate = (np.sum(pred_poisoned_remaining == test_poisoned.y[I_poisoned_remaining]) / test_poisoned.y.shape[0]) * 100
-    print("Success attack rate after fine-pruning: {0}%".format(succ_att_rate))
+    print('\033[95m' + "Success attack rate after fine-pruning: {0}%".format(succ_att_rate))
     pred_clean_remaining = fine_pruned_model.predict(test_clean_remaining)
     accu = (test_clean.y.shape[0] - np.sum(pred_clean_remaining != test_clean.y[I_clean_remaining]) / test_clean.y.shape[0]) * 100
     print("Accuracy after fine-pruning: {0}%".format(accu))
