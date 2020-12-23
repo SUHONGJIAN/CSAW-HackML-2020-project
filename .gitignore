@@ -1,4 +1,2 @@
 data/*
 !data/*.txt
-eval/*
-!eval/*.txt
