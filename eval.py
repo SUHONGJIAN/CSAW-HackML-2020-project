@@ -22,10 +22,10 @@ class DataLoader:
 
 def num_to_net(num):
     numbers = {
-        1: {"model": "models/sunglasses_bd_net.h5", "entropy": "entropy/entropy_clean_sunglasses.h5"},
-        2: {"model": "models/anonymous_1_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous1"},
-        3: {"model": "models/anonymous_2_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous2"},
-        4: {"model": "models/multi_trigger_multi_target_bd_net.h5", "entropy": "entropy/entropy_clean_multi"},
+        1: {"model": "models/sunglasses_bd_net.h5", "entropy": "entropy/entropy_clean_sunglasses.h5", "fine_pruned_model": ""},
+        2: {"model": "models/anonymous_1_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous1", "fine_pruned_model": ""},
+        3: {"model": "models/anonymous_2_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous2", "fine_pruned_model": ""},
+        4: {"model": "models/multi_trigger_multi_target_bd_net.h5", "entropy": "entropy/entropy_clean_multi", "fine_pruned_model": ""},
     }
     return numbers.get(num, {"model": "models/sunglasses_bd_net", "entropy": "entropy/entropy_clean_sunglasses.h5"})
 
@@ -37,7 +37,7 @@ def main():
     model = net["model"]
     bd_model = keras.models.load_model(model)
 
-    # Give the test poisoned data
+    # Set the test poisoned data
     print("Please put the poisoned data under eval/ and name the file test.h5 (i.e. eval/poisoned.h5) \nThen click enter.")
     clean_data_test_filename = "data/clean_test_data.h5"
     poisoned_data_test_filename = "eval/poisoned.h5"
@@ -58,9 +58,28 @@ def main():
     pred_clean = STRIP_filter.predict(entropy_clean, test_clean.x, bd_model)
     accu = np.mean(np.equal(pred_clean, test_clean.y)) * 100
     print("Accuracy after STRIP: {0}%".format(accu))
+
     # Step two: Fine-pruning
     print("Fine-pruning: running......")
-    
+    I_poisoned_remaining = np.argwhere(pred_poisoned == test_poisoned.y)
+    test_poisoned_remaining = test_poisoned.x[I_poisoned_remaining]
+    I_clean_remaining = np.argwhere(pred_clean != test_clean.y)
+    test_clean_remaining = test_clean.x[I_clean_remaining]
+    fine_pruned_model = keras.models.load_model(net["fine_pruned_model"])
+    pred_poisoned_remaining = fine_pruned_model.predict(test_poisoned_remaining)
+    succ_att_rate = (np.sum(pred_poisoned_remaining == test_poisoned.y[I_poisoned_remaining]) / test_poisoned.y.shape[0]) * 100
+    print("Success attack rate after fine-pruning: {0}%".format(succ_att_rate))
+    pred_clean_remaining = fine_pruned_model.predict(test_clean_remaining)
+    accu = (test_clean.y.shape[0] - np.sum(pred_clean_remaining != test_clean.y[I_clean_remaining]) / test_clean.y.shape[0]) * 100
+    print("Accuracy after fine-pruning: {0}%".format(accu))
+
+    # Output the final prediction
+    for i in I_poisoned_remaining:
+      pred_poisoned[i] = pred_poisoned_remaining[i]
+    print("Final prediction of poisoned data: {0}".format(pred_poisoned))
+    for i in I_clean_remaining:
+      pred_clean[i] = pred_clean_remaining[i]
+    print("Final prediction of clean data: {0}".format(pred_poisoned))
 
 
 if __name__ == "__main__":
