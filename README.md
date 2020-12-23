@@ -1,7 +1,7 @@
 ## Introduction
 This is a backdoor detector for BadNets trained on the YouTube Face dataset.  
 BadNets: all BadNets are under **models/** directory  
-Repaired Models: under **entropy/** and **finePruning/** directory
+Repaired Models: under **entropy/** and **finePruning/** directory  
 Methods: STRIP + Fine-pruning
 ## Environment Requirements
  - python 3.x
