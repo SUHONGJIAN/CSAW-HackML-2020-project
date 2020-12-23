@@ -7,6 +7,7 @@ Methods: STRIP + Fine-pruning
 1. Download the data from [here](https://drive.google.com/drive/folders/1FhMDxD4cezVNk7BhRVSbhdkRwXUTI7oK) into the **data/** directory.
 2. Open your terminal and run:  
     > *python eval.py*
+3. Follow the instructions from your terminal
 
 ## Environment Requirements:
  - python 3.x
