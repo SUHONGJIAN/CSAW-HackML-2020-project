@@ -24,7 +24,7 @@ def num_to_net(num):
     numbers = {
         1: {"model": "models/sunglasses_bd_net.h5", "entropy": "entropy/entropy_clean_sunglasses.h5"},
         2: {"model": "models/anonymous_1_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous1"},
-        3: {"model": "models/anonymous_2_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous1"},
+        3: {"model": "models/anonymous_2_bd_net.h5", "entropy": "entropy/entropy_clean_anonymous2"},
         4: {"model": "models/multi_trigger_multi_target_bd_net.h5", "entropy": "entropy/entropy_clean_multi"},
     }
     return numbers.get(num, {"model": "models/sunglasses_bd_net", "entropy": "entropy/entropy_clean_sunglasses.h5"})
