@@ -79,6 +79,12 @@ def main():
         succ_att_rate = np.mean(np.equal(pred_poisoned, test_poisoned.y)) * 100
         print('\033[95m' + "Success attack rate after STRIP: {0}%".format(succ_att_rate))
         pred_clean = STRIP_filter.predict(entropy_clean, test_clean.x, bd_model)
+        I_poisoned = np.argwhere(pred_poisoned == 1)
+        for i in I_poisoned:
+            pred_poisoned[i] = -1
+        I_poisoned = np.argwhere(pred_poisoned == 1)
+        for i in I_poisoned:
+            pred_clean[i] = -1
 
         # Step two: Fine-pruning
         print('\033[0;32m' + "Fine-pruning: running......")
@@ -102,8 +108,8 @@ def main():
               pred_clean[i] = pred_clean_remaining[i]
 
         # Output the final prediction
-        print('\033[95m' + "Final prediction of poisoned data: {0}".format(pred_poisoned))
-        print("Final prediction of clean data: {0}".format(pred_clean))
+        print('\033[95m' + "Final prediction of poisoned data (backdoor = -1): {0}".format(pred_poisoned))
+        print("Final prediction of clean data (backdoor = -1): {0}".format(pred_clean))
     else:
         # Set the test mixed data
         print('\033[0;32m' + "Please put the mixed data under data/ and name the file mixed_data.h5 (i.e. data/mixed_data.h5) \nThen click enter.")
@@ -121,6 +127,9 @@ def main():
         entropy_clean = np.asarray(entropy_clean_data["data"])
         STRIP_filter = STRIP(50, 1.5, 1, 0)
         pred_mixed = STRIP_filter.predict(entropy_clean, test_mixed.x, bd_model)
+        I_poisoned = np.argwhere(pred_mixed == 1)
+        for i in I_poisoned:
+            pred_mixed[i] = -1
 
         # Step two: Fine-pruning
         print('\033[0;32m' + "Fine-pruning: running......")
@@ -133,7 +142,7 @@ def main():
               pred_mixed[i] = pred_mixed_remaining[i]
 
         # Output the final prediction
-        print('\033[95m' + "Final prediction of poisoned data: {0}".format(pred_mixed))
+        print('\033[95m' + "Final prediction of poisoned data (backdoor = -1): {0}".format(pred_mixed))
 
 
 if __name__ == "__main__":
