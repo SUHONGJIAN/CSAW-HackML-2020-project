@@ -1,8 +1,22 @@
 ## Introduction
-This is a backdoor detector for BadNets trained on the YouTube Face dataset.  
-BadNets: all BadNets are under **models/** directory  
-Repaired Models: under **entropy/** and **finePruning/** directory  
-Methods: STRIP + Fine-pruning
+**This is a backdoor detector for BadNets trained on the YouTube Face dataset.**  
+Methods: STRIP + Fine-pruning  
+BadNets: all BadNets are under **models/**   
+Repaired Models: under **entropy/** and **finePruning/**  
+| *Repaired after STRIP* | |
+| --- | --- |
+| **BadNet1** | entropy/entropy_clean_sunglasses.h5 |
+| **BadNet2** | entropy/entropy_clean_anonymous1.h5 |
+| **BadNet3** | entropy/entropy_clean_anonymous2.h5 |
+| **BadNet4** | entropy/entropy_clean_multi.h5 |
+
+| *Repaired after Fine-pruning* | |
+| --- | --- |
+| **BadNet1** | finePruning/sunglasses_repaired_net.h5 |
+| **BadNet2** | finePruning/anonymous_1_repaired_net.h5 |
+| **BadNet3** | finePruning/anonymous_2_repaired_net.h5 |
+| **BadNet4** | finePruning/multi_trigger_multi_target_repaired_net.h5 |
+
 ## Environment Requirements
  - python 3.x
  - os
@@ -20,6 +34,6 @@ Methods: STRIP + Fine-pruning
 3. Follow the instructions from your terminal
 
 ## **Attention!!!**
-***In the STRIP process,  the running time may be very long. (e.g. for 10KB data, may need 15min.)***  
+***In the STRIP process,  the running time may be very long. (e.g. for 10,000 inputs, may need 15min.)***  
 ***If you notice the following warnings from your terminal, please ignore them.***  
 ![](resources/warning.png)
