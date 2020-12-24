@@ -98,13 +98,12 @@ def main():
             pred_clean_remaining = fine_pruned_model.predict(test_clean_remaining)
             accu = (test_clean.y.shape[0] - np.sum(pred_clean_remaining != test_clean.y[I_clean_remaining]) / test_clean.y.shape[0]) * 100
             print("Accuracy after fine-pruning: {0}%".format(accu))
-
-         # Output the final prediction
-        for i in I_poisoned_remaining:
-          pred_poisoned[i] = pred_poisoned_remaining[i]
+            for i in I_poisoned_remaining:
+              pred_poisoned[i] = pred_poisoned_remaining[i]
+            for i in I_clean_remaining:
+              pred_clean[i] = pred_clean_remaining[i]
+        # Output the final prediction
         print("Final prediction of poisoned data: {0}".format(pred_poisoned))
-        for i in I_clean_remaining:
-          pred_clean[i] = pred_clean_remaining[i]
         print("Final prediction of clean data: {0}".format(pred_poisoned))
     else:
         # Set the test mixed data
@@ -131,10 +130,10 @@ def main():
             test_mixed_remaining = test_mixed.x[I_mixed_remaining]
             fine_pruned_model = keras.models.load_model(net["fine_pruned_model"])
             pred_mixed_remaining = fine_pruned_model.predict(test_mixed_remaining)
+            for i in I_mixed_remaining:
+              pred_mixed[i] = pred_mixed_remaining[i]
 
         # Output the final prediction
-        for i in I_mixed_remaining:
-          pred_mixed[i] = pred_mixed_remaining[i]
         print("Final prediction of poisoned data: {0}".format(pred_mixed))
 
 
