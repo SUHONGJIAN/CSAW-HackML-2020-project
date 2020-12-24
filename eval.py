@@ -17,8 +17,8 @@ class DataLoader:
   def load(self):
     data = h5py.File(self.file_path, "r")
     x_data = np.asarray(data["data"])
-    self.x = x_data.transpose((0,2,3,1))[:1000]
-    self.y = np.asarray(data["label"])[:1000]
+    self.x = x_data.transpose((0,2,3,1))
+    self.y = np.asarray(data["label"])
   
   def preprocess(self):
     self.x = np.asarray(self.x/255, np.float64)
