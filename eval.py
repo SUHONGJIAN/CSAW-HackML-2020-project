@@ -17,8 +17,8 @@ class DataLoader:
   def load(self):
     data = h5py.File(self.file_path, "r")
     x_data = np.asarray(data["data"])
-    self.x = x_data.transpose((0,2,3,1))
-    self.y = np.asarray(data["label"])
+    self.x = x_data.transpose((0,2,3,1))[:1000]
+    self.y = np.asarray(data["label"])[:1000]
   
   def preprocess(self):
     self.x = np.asarray(self.x/255, np.float64)
@@ -81,7 +81,7 @@ def main():
         print('\033[0;32m' + "Please wait for accuracy...")
         pred_clean = STRIP_filter.predict(entropy_clean, test_clean.x, bd_model)
         accu = np.mean(np.equal(pred_clean, test_clean.y)) * 100
-        print("Accuracy after STRIP: {0}%".format(accu))
+        print('\033[95m' + "Accuracy after STRIP: {0}%".format(accu))
 
         # Step two: Fine-pruning
         print('\033[0;32m' + "Fine-pruning: running......")
@@ -97,17 +97,17 @@ def main():
             print('\033[0;32m' + "Please wait for accuracy...")
             pred_clean_remaining = fine_pruned_model.predict(test_clean_remaining)
             accu = (test_clean.y.shape[0] - np.sum(pred_clean_remaining != test_clean.y[I_clean_remaining]) / test_clean.y.shape[0]) * 100
-            print("Accuracy after fine-pruning: {0}%".format(accu))
+            print('\033[95m' + "Accuracy after fine-pruning: {0}%".format(accu))
             for i in I_poisoned_remaining:
               pred_poisoned[i] = pred_poisoned_remaining[i]
             for i in I_clean_remaining:
               pred_clean[i] = pred_clean_remaining[i]
         # Output the final prediction
-        print("Final prediction of poisoned data: {0}".format(pred_poisoned))
+        print('\033[95m' + "Final prediction of poisoned data: {0}".format(pred_poisoned))
         print("Final prediction of clean data: {0}".format(pred_poisoned))
     else:
         # Set the test mixed data
-        print("Please put the mixed data under data/ and name the file mixed_data.h5 (i.e. data/mixed_data.h5) \nThen click enter.")
+        print('\033[0;32m' + "Please put the mixed data under data/ and name the file mixed_data.h5 (i.e. data/mixed_data.h5) \nThen click enter.")
         input()
         mixed_data_test_filename = "data/mixex_data.h5"
         while not os.path.isfile(mixed_data_test_filename):
@@ -134,7 +134,7 @@ def main():
               pred_mixed[i] = pred_mixed_remaining[i]
 
         # Output the final prediction
-        print("Final prediction of poisoned data: {0}".format(pred_mixed))
+        print('\033[95m' + "Final prediction of poisoned data: {0}".format(pred_mixed))
 
 
 if __name__ == "__main__":
