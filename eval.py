@@ -78,33 +78,32 @@ def main():
         pred_poisoned = STRIP_filter.predict(entropy_clean, test_poisoned.x, bd_model)
         succ_att_rate = np.mean(np.equal(pred_poisoned, test_poisoned.y)) * 100
         print('\033[95m' + "Success attack rate after STRIP: {0}%".format(succ_att_rate))
-        print('\033[0;32m' + "Please wait for accuracy...")
         pred_clean = STRIP_filter.predict(entropy_clean, test_clean.x, bd_model)
-        accu = np.mean(np.equal(pred_clean, test_clean.y)) * 100
-        print('\033[95m' + "Accuracy after STRIP: {0}%".format(accu))
 
         # Step two: Fine-pruning
         print('\033[0;32m' + "Fine-pruning: running......")
-        I_poisoned_remaining = np.argwhere(pred_poisoned == test_poisoned.y)
-        if I_poisoned_remaining.size != 0 :
+        fine_pruned_model = keras.models.load_model(net["fine_pruned_model"])
+        I_poisoned_remaining = np.argwhere(pred_poisoned == 0)
+        if I_poisoned_remaining.size != 0:
             test_poisoned_remaining = test_poisoned.x[I_poisoned_remaining]
-            I_clean_remaining = np.argwhere(pred_clean != test_clean.y)
-            test_clean_remaining = test_clean.x[I_clean_remaining]
-            fine_pruned_model = keras.models.load_model(net["fine_pruned_model"])
             pred_poisoned_remaining = fine_pruned_model.predict(test_poisoned_remaining)
             succ_att_rate = (np.sum(pred_poisoned_remaining == test_poisoned.y[I_poisoned_remaining]) / test_poisoned.y.shape[0]) * 100
-            print('\033[95m' + "Success attack rate after fine-pruning: {0}%".format(succ_att_rate))
+            for i in I_poisoned_remaining:
+              pred_poisoned[i] = pred_poisoned_remaining[i]
+        print('\033[95m' + "Success attack rate after fine-pruning: {0}%".format(succ_att_rate))
+        I_clean_remaining = np.argwhere(pred_clean == 0)
+        if I_clean_remaining.size != 0:
             print('\033[0;32m' + "Please wait for accuracy...")
+            test_clean_remaining = test_clean.x[I_clean_remaining]
             pred_clean_remaining = fine_pruned_model.predict(test_clean_remaining)
             accu = (test_clean.y.shape[0] - np.sum(pred_clean_remaining != test_clean.y[I_clean_remaining]) / test_clean.y.shape[0]) * 100
             print('\033[95m' + "Accuracy after fine-pruning: {0}%".format(accu))
-            for i in I_poisoned_remaining:
-              pred_poisoned[i] = pred_poisoned_remaining[i]
             for i in I_clean_remaining:
               pred_clean[i] = pred_clean_remaining[i]
+
         # Output the final prediction
         print('\033[95m' + "Final prediction of poisoned data: {0}".format(pred_poisoned))
-        print("Final prediction of clean data: {0}".format(pred_poisoned))
+        print("Final prediction of clean data: {0}".format(pred_clean))
     else:
         # Set the test mixed data
         print('\033[0;32m' + "Please put the mixed data under data/ and name the file mixed_data.h5 (i.e. data/mixed_data.h5) \nThen click enter.")
@@ -125,7 +124,7 @@ def main():
 
         # Step two: Fine-pruning
         print('\033[0;32m' + "Fine-pruning: running......")
-        I_mixed_remaining = np.argwhere(pred_mixed == test_mixed.y)
+        I_mixed_remaining = np.argwhere(pred_mixed == 0)
         if I_mixed_remaining.size != 0:
             test_mixed_remaining = test_mixed.x[I_mixed_remaining]
             fine_pruned_model = keras.models.load_model(net["fine_pruned_model"])
