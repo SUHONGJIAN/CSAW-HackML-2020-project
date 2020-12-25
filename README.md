@@ -1,6 +1,6 @@
 ## Introduction
 **This is a backdoor detector for BadNets trained on the YouTube Face dataset.**  
-Methods: STRIP + Fine-pruning  
+Methods: [STRIP](https://arxiv.org/abs/1902.06531) + [Fine-pruning](https://arxiv.org/abs/1805.12185)  
 BadNets: all BadNets are under **models/**   
 Repaired Models: under **entropy/** and **finePruning/**  
 <mark style="background-color: #595959">(To run it, CPU is fine, but **GPU** will be better)</mark> 
