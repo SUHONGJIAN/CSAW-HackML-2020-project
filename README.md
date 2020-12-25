@@ -1,5 +1,7 @@
 ## Introduction
-**This is a backdoor detector for BadNets trained on the YouTube Face dataset.**  
+<u>**This is a backdoor detector for bad neural networks** (i.e. DNN with stealthy backdoors) **trained on the YouTube Face dataset.**</u>  
+***
+**Competition website:** [CSAW_HACKML](https://www.csaw.io/hackml)  
 **Methods:** [STRIP](https://arxiv.org/abs/1902.06531) + [Fine-pruning](https://arxiv.org/abs/1805.12185)  
 **BadNets:** all BadNets are under **models/**   
 **Repaired Models:** under **entropy/** and **finePruning/**  
