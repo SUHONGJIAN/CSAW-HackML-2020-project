@@ -3,14 +3,15 @@
 Methods: STRIP + Fine-pruning  
 BadNets: all BadNets are under **models/**   
 Repaired Models: under **entropy/** and **finePruning/**  
-| *Repaired after STRIP* | |
+<mark style="background-color: #595959">(To run it, CPU is fine, but **GPU** will be better)</mark> 
+| *Repaired Net after STRIP* | |
 | --- | --- |
 | **BadNet1** | entropy/entropy_clean_sunglasses.h5 |
 | **BadNet2** | entropy/entropy_clean_anonymous1.h5 |
 | **BadNet3** | entropy/entropy_clean_anonymous2.h5 |
 | **BadNet4** | entropy/entropy_clean_multi.h5 |
 
-| *Repaired after Fine-pruning* | |
+| *Repaired Net after Fine-pruning* | |
 | --- | --- |
 | **BadNet1** | finePruning/sunglasses_repaired_net.h5 |
 | **BadNet2** | finePruning/anonymous_1_repaired_net.h5 |
@@ -34,6 +35,8 @@ Repaired Models: under **entropy/** and **finePruning/**
 3. Follow the instructions from your terminal
 
 ## **Attention!!!**
-***In the STRIP process,  the running time may be very long. (e.g. for 10,000 inputs, may need 15min.)***  
-***If you notice the following warnings from your terminal, please ignore them.***  
-![](resources/warning.png)
+***In the STRIP process, the running time may be very long (e.g. for 10,000 inputs, may need 15min.).***  
+***If notice the following warnings from your terminal, you can ignore them.***  
+![](resources/warning1.png)
+![](resources/warning2.png)
+![](resources/warning3.png)
