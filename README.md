@@ -24,6 +24,7 @@ Repaired Models: under **entropy/** and **finePruning/**
  - numpy
  - keras
  - tensorflow
+ - tensorflow_model_optimization
  - h5py
  - scipy
  - matplotlib
